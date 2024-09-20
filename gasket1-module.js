@@ -10,6 +10,8 @@ const [vertex_shader, fragment_shader] = [
 
 let gl = null;
 let program = null;
+let mouse_start = null;
+let translation = translate(0, 0, 0);
 
 const num_points = 50000;
 
@@ -31,8 +33,21 @@ export async function init()
 	program = await init_shaders(gl, await vertex_shader, await fragment_shader);
 	gl.useProgram(program);
 	set_colour(vec4(1.0, 0.0, 0.0, 1.0));
+	set_transform(translation);
 
 	setup_points(num_points);
+	canvas.addEventListener('mousedown', (event) => {
+		if (event.button === 0) {
+			mouse_start = get_cursor_location(event);
+			canvas.addEventListener('mousemove', move_mouse);
+		}
+	});
+
+	canvas.addEventListener('mouseup', (event) => {
+		if (event.button === 0)
+			canvas.removeEventListener('mousemove', move_mouse);
+	});
+
 	window.addEventListener('keydown', (event) => {
 		if (event.key !== ' ')
 			return;
@@ -43,8 +58,28 @@ export async function init()
 	render();
 };
 
+function get_cursor_location(event) {
+	const canvas = event.target;
+
+	const x = (event.offsetX / canvas.clientWidth) * 2 - 1;
+	const y = -((event.offsetY / canvas.clientHeight) * 2 - 1);
+	return vec2(x, y);
+}
+
+function move_mouse(event) {
+	const location = get_cursor_location(event);
+	const delta = negate(subtract(mouse_start, location));
+	translation = translate(delta[0], delta[1], 0);
+	set_transform(mult(translation, scalem(zoom, zoom, zoom)));
+}
+
 function change_colour() {
 	set_colour(vec4(Math.random(), Math.random(), Math.random(), 1.0));
+}
+
+
+function set_transform(transform) {
+	gl.uniformMatrix4fv(gl.getUniformLocation(program, 'transform'), false, flatten(transform));
 }
 
 function set_colour(colour) {
