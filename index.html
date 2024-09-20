@@ -9,8 +9,9 @@
 		<script type="module" src="gasket1-module.js"></script>
 		<script type="module">
 			import * as d1 from './gasket1-module.js';
+			import * as d2 from './draw-circle.js';
 			window.onload = function() {
-				[d1].forEach(async m => m.init());
+				[d1, d2].forEach(async m => m.init());
 			}
 		</script>
 		<link href="style.css" rel="stylesheet"/>
