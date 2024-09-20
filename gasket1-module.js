@@ -12,8 +12,9 @@ let gl = null;
 let program = null;
 let mouse_start = null;
 let translation = translate(0, 0, 0);
+let zoom = 1.0;
 
-const num_points = 50000;
+const num_points = 500000;
 
 export async function init()
 {
@@ -33,7 +34,7 @@ export async function init()
 	program = await init_shaders(gl, await vertex_shader, await fragment_shader);
 	gl.useProgram(program);
 	set_colour(vec4(1.0, 0.0, 0.0, 1.0));
-	set_transform(translation);
+	set_transform(mult(translation, scalem(zoom, zoom, zoom)));
 
 	setup_points(num_points);
 	canvas.addEventListener('mousedown', (event) => {
@@ -55,6 +56,8 @@ export async function init()
 		change_colour();
 		event.preventDefault();
 	});
+
+	canvas.addEventListener('wheel', change_zoom, { passive: false });
 	render();
 };
 
@@ -77,6 +80,12 @@ function change_colour() {
 	set_colour(vec4(Math.random(), Math.random(), Math.random(), 1.0));
 }
 
+function change_zoom(event) {
+	console.log(event);
+	zoom += ((event.deltaY < 0) ? -1 : 1) * 0.01;
+	set_transform(mult(translation, scalem(zoom, zoom, zoom)));
+	event.preventDefault();
+}
 
 function set_transform(transform) {
 	gl.uniformMatrix4fv(gl.getUniformLocation(program, 'transform'), false, flatten(transform));
