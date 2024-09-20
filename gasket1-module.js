@@ -10,7 +10,6 @@ const [vertex_shader, fragment_shader] = [
 
 let gl = null;
 let program = null;
-let colour = vec4(1.0, 0.0, 0.0, 1.0);
 
 const num_points = 50000;
 
@@ -31,6 +30,7 @@ export async function init()
 
 	program = await init_shaders(gl, await vertex_shader, await fragment_shader);
 	gl.useProgram(program);
+	set_colour(vec4(1.0, 0.0, 0.0, 1.0));
 
 	setup_points(num_points);
 	window.addEventListener('keydown', (event) => {
@@ -44,7 +44,12 @@ export async function init()
 };
 
 function change_colour() {
-	colour = vec4(Math.random(), Math.random(), Math.random(), 1.0);
+	set_colour(vec4(Math.random(), Math.random(), Math.random(), 1.0));
+}
+
+function set_colour(colour) {
+	const ucolour = gl.getUniformLocation(program, 'colour');
+	gl.uniform4fv(ucolour, colour);
 }
 
 function setup_points(num_points) {
@@ -99,8 +104,6 @@ function create_points(num_points) {
 
 function render() {
 	gl.clear(gl.COLOR_BUFFER_BIT );
-	const ucolour = gl.getUniformLocation(program, 'colour');
-	gl.uniform4fv(ucolour, colour);
 	gl.drawArrays(gl.POINTS, 0, num_points);
 
 	window.requestAnimFrame(render);
