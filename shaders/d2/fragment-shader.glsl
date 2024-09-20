@@ -12,7 +12,7 @@ void main()
 	// Breytum þeim í -1 til 1
 	st = 2.0*st - 1.0;
 
-  st += vec2(0.0, sin(time * 0.0005));
+  st += vec2(cos(time * 0.005), sin(time * 0.0005));
 	if (length(st) < 0.1)
 		color = vec4(1.0, 1.0, 0.0, 1.0);	// Gulur
 	else
