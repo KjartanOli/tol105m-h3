@@ -10,6 +10,7 @@ const [vertex_shader, fragment_shader] = [
 
 let gl = null;
 let program = null;
+let colour = vec4(1.0, 0.0, 0.0, 1.0);
 
 const num_points = 50000;
 
@@ -32,8 +33,19 @@ export async function init()
 	gl.useProgram(program);
 
 	setup_points(num_points);
-	render(num_points);
+	window.addEventListener('keydown', (event) => {
+		if (event.key !== ' ')
+			return;
+
+		change_colour();
+		event.preventDefault();
+	});
+	render();
 };
+
+function change_colour() {
+	colour = vec4(Math.random(), Math.random(), Math.random(), 1.0);
+}
 
 function setup_points(num_points) {
 	// Load the data into the GPU
@@ -85,7 +97,11 @@ function create_points(num_points) {
 }
 
 
-function render(num_points) {
+function render() {
 	gl.clear(gl.COLOR_BUFFER_BIT );
+	const ucolour = gl.getUniformLocation(program, 'colour');
+	gl.uniform4fv(ucolour, colour);
 	gl.drawArrays(gl.POINTS, 0, num_points);
+
+	window.requestAnimFrame(render);
 }
