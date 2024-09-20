@@ -81,7 +81,6 @@ function change_colour() {
 }
 
 function change_zoom(event) {
-	console.log(event);
 	zoom += ((event.deltaY < 0) ? -1 : 1) * 0.01;
 	set_transform(mult(translation, scalem(zoom, zoom, zoom)));
 	event.preventDefault();
