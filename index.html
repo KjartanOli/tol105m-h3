@@ -6,6 +6,13 @@
 		<script type="text/javascript" src="webgl-utils.js"></script>
 		<script type="text/javascript" src="MV.js"></script>
 		<script type="module" src="shaders.js"></script>
+		<script type="module" src="gasket1-module.js"></script>
+		<script type="module">
+			import * as d1 from './gasket1-module.js';
+			window.onload = function() {
+				[d1].forEach(async m => m.init());
+			}
+		</script>
 		<link href="style.css" rel="stylesheet"/>
 	</head>
 	<body>
